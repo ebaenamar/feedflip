@@ -19,6 +19,12 @@ interface Video {
   aiInsights?: string;
 }
 
+interface VideoResponse {
+  videos: Video[];
+  nextPageToken?: string;
+  aiInsights?: string;
+}
+
 export default function VideoFeed() {
   const [topic, setTopic] = useState('');
   const [searchInput, setSearchInput] = useState('');
@@ -30,7 +36,7 @@ export default function VideoFeed() {
     });
     const response = await fetch(`/api/videos?${params}`);
     if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
+    return response.json() as Promise<VideoResponse>;
   };
 
   const {
@@ -42,7 +48,8 @@ export default function VideoFeed() {
   } = useInfiniteQuery({
     queryKey: ['videos', topic],
     queryFn: fetchVideos,
-    getNextPageParam: (lastPage) => lastPage.nextPageToken,
+    getNextPageParam: (lastPage: VideoResponse) => lastPage.nextPageToken,
+    initialPageParam: '',
   });
 
   const handleSearch = (e: React.FormEvent) => {

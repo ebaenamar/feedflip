@@ -37,9 +37,3 @@ export default function Home() {
     </div>
   );
 }
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
-}

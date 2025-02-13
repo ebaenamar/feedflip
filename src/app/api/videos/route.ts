@@ -25,9 +25,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'No videos found' }, { status: 404 });
     }
 
-    // Extract video IDs for content analysis
-    const videoIds = response.data.items.map(item => item.id?.videoId).filter(Boolean);
+    // Extract video IDs and ensure they are valid strings
+    const videoIds = response.data.items
+      .map(item => item.id?.videoId)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
     
+    if (videoIds.length === 0) {
+      return NextResponse.json({ error: 'No valid video IDs found' }, { status: 404 });
+    }
+
     // Get detailed video information
     const videosDetails = await youtube.videos.list({
       part: ['snippet', 'statistics'],
@@ -35,12 +41,21 @@ export async function GET(request: Request) {
       key: process.env.YOUTUBE_API_KEY,
     });
 
+    if (!videosDetails.data.items) {
+      return NextResponse.json({ error: 'No video details found' }, { status: 404 });
+    }
+
     // Analyze content with OpenAI for better recommendations
-    const videoDescriptions = videosDetails.data.items?.map(item => item.snippet?.description).filter(Boolean);
+    const videoDescriptions = videosDetails.data.items
+      .map(item => item.snippet?.description)
+      .filter((desc): desc is string => typeof desc === 'string' && desc.length > 0);
+
     const aiAnalysis = await openai.chat.completions.create({
       messages: [{
         role: 'system',
-        content: `Analyze these video descriptions and rate their diversity of perspective and educational value: ${videoDescriptions?.join('\n')}`
+        content: videoDescriptions.length > 0
+          ? `Analyze these video descriptions and rate their diversity of perspective and educational value: ${videoDescriptions.join('\n')}`
+          : 'No video descriptions available for analysis.'
       }],
       model: 'gpt-3.5-turbo',
     });

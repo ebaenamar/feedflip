@@ -36,56 +36,19 @@ export default function VideoFeed() {
   const { preferences } = usePreferences();
   
   const fetchVideos = async ({ pageParam = '' }) => {
-    try {
-      const params = new URLSearchParams({
-        pageToken: pageParam,
-        topic: topic,
-        outOfEchoChamber: preferences.outOfEchoChamber.toString(),
-        contentTypes: preferences.contentTypes.join(','),
-        activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
-      });
-      const response = await fetch(`/api/videos?${params}`);
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response.json() as Promise<VideoResponse>;
-    } catch (error) {
-      // Return mock data on error
-      return {
-        videos: [
-          {
-            id: 'mock1',
-            snippet: {
-              title: 'Setting and Achieving Your Goals',
-              thumbnails: {
-                high: {
-                  url: 'https://picsum.photos/400/300'
-                }
-              },
-              channelTitle: 'Personal Growth Channel',
-              description: 'Learn how to set and achieve your personal goals effectively.'
-            },
-            aiInsights: 'This video provides practical advice on goal setting and achievement.'
-          },
-          {
-            id: 'mock2',
-            snippet: {
-              title: 'Mindfulness for Success',
-              thumbnails: {
-                high: {
-                  url: 'https://picsum.photos/400/300'
-                }
-              },
-              channelTitle: 'Wellness & Growth',
-              description: 'Discover how mindfulness can help you achieve your goals.'
-            },
-            aiInsights: 'Focuses on mental well-being and personal development.'
-          }
-        ],
-        nextPageToken: null
-      };
-    }
+    const params = new URLSearchParams({
+      pageToken: pageParam,
+      topic: topic,
+      outOfEchoChamber: preferences.outOfEchoChamber.toString(),
+      contentTypes: preferences.contentTypes.join(','),
+      activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
+    });
+    const response = await fetch(`/api/videos?${params}`);
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json() as Promise<VideoResponse>;
   };
 
-  let {
+  const {
     data,
     fetchNextPage,
     hasNextPage,
@@ -115,45 +78,23 @@ export default function VideoFeed() {
     </div>
   );
   
-  if (isError) {
-    console.error('Error loading videos, falling back to mock data');
-    const mockData = {
-      pages: [{
-        videos: [
-          {
-            id: 'mock1',
-            snippet: {
-              title: 'Setting and Achieving Your Goals',
-              thumbnails: {
-                high: {
-                  url: 'https://picsum.photos/400/300'
-                }
-              },
-              channelTitle: 'Personal Growth Channel',
-              description: 'Learn how to set and achieve your personal goals effectively.'
-            },
-            aiInsights: 'This video provides practical advice on goal setting and achievement.'
-          },
-          {
-            id: 'mock2',
-            snippet: {
-              title: 'Mindfulness for Success',
-              thumbnails: {
-                high: {
-                  url: 'https://picsum.photos/400/300'
-                }
-              },
-              channelTitle: 'Wellness & Growth',
-              description: 'Discover how mindfulness can help you achieve your goals.'
-            },
-            aiInsights: 'Focuses on mental well-being and personal development.'
-          }
-        ],
-        nextPageToken: null
-      }]
-    };
-    data = mockData;
-  }
+  if (isError) return (
+    <div className="flex flex-col justify-center items-center min-h-[400px] space-y-4">
+      <div className="text-red-600 mb-2">
+        <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <p className="text-red-600 font-medium">Error loading videos</p>
+      <p className="text-gray-500 text-sm">Please check your connection and try again</p>
+      <button 
+        onClick={() => window.location.reload()}
+        className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+      >
+        Retry
+      </button>
+    </div>
+  );
 
   const allVideos = data?.pages.flatMap((page) => page.videos) ?? [];
 

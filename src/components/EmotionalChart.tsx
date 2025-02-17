@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-// Removed unused imports
 import { useGoals } from '@/hooks/useGoals';
 import { analyzeTrends, compareGoals, getEmotionColor, generateRecommendations, exportEmotionalData } from '@/utils/emotionalAnalysis';
 import { EmotionalState } from '@/hooks/useGoals';
@@ -156,7 +155,10 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
                     >
                       <g>
                         <circle
-                          className="group-hover:r-6 transition-all duration-200"
+                          className="transition-all duration-200"
+                          style={{
+                            r: 4
+                          }}
                           cx={endX}
                           cy={endY}
                           r="4"

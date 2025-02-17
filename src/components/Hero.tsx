@@ -18,7 +18,7 @@ export default function Hero() {
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
                 Set meaningful life goals and let FeedFlip curate inspiring social content that helps you grow.
-                We're your AI companion on the journey to becoming your best self.
+                We&apos;re your AI companion on the journey to becoming your best self.
               </p>
               <div className="mt-4 space-y-2">
                 <div className="flex items-center space-x-2">

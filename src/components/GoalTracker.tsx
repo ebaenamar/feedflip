@@ -18,19 +18,26 @@ interface Goal {
   }[];
 }
 
-interface ContentRecommendation {
-  id: string;
-  title: string;
-  type: 'inspiration' | 'guide' | 'story' | 'exercise';
-  emotionalTone: 'motivational' | 'supportive' | 'challenging' | 'celebratory';
-  source: string;
-  preview: string;
-}
+
 
 export default function GoalTracker() {
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const [goals] = useState<Goal[]>([
+    {
+      id: '1',
+      title: 'Run a Marathon',
+      description: 'Train and complete my first full marathon',
+      targetDate: new Date('2024-12-31'),
+      progress: 35,
+      category: 'health',
+      emotionalState: 'motivated',
+      milestones: [
+        { id: '1', title: 'Complete 5K training', completed: true },
+        { id: '2', title: 'Run half marathon', completed: false },
+        { id: '3', title: 'Establish nutrition plan', completed: true }
+      ]
+    }
+  ]);
   const [activeGoal, setActiveGoal] = useState<string | null>(null);
-  const [showAddGoal, setShowAddGoal] = useState(false);
 
   const emotionColors = {
     excited: 'bg-yellow-100 text-yellow-800',

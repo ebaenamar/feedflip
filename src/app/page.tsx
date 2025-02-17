@@ -3,8 +3,6 @@
 import VideoFeed from '@/components/VideoFeed';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
-import UserPreferences from '@/components/UserPreferences';
-import WellnessProfile from '@/components/WellnessProfile';
 import GoalTracker from '@/components/GoalTracker';
 
 export default function Home() {

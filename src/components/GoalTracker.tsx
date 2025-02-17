@@ -170,7 +170,7 @@ export default function GoalTracker() {
 
           {/* Add Goal Button */}
           <motion.button
-            onClick={() => setShowAddGoal(true)}
+            onClick={() => alert('Coming soon: Add new goals!')}
             className="h-full min-h-[200px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center p-6 hover:border-indigo-500 hover:bg-indigo-50 transition-colors"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}

@@ -38,7 +38,7 @@ interface Goal {
 interface GoalStore {
   goals: Goal[];
   activeGoalId: string | null;
-  addGoal: (goal: Omit<Goal, 'id' | 'emotionalStates'>) => void;
+  addGoal: (goal: Omit<Goal, 'id' | 'emotionalStates' | 'currentContent'>) => void;
   updateGoal: (id: string, updates: Partial<Goal>) => void;
   deleteGoal: (id: string) => void;
   setActiveGoal: (id: string | null) => void;
@@ -55,10 +55,11 @@ export const useGoals = create<GoalStore>((set, get) => ({
         ...goal, 
         id: Date.now().toString(),
         emotionalStates: [{
-          current: { energy: 50, positivity: 50, clarity: 50, confidence: 50 },
+          current: goal.emotional || { energy: 50, positivity: 50, clarity: 50, confidence: 50 },
           target: { energy: 80, positivity: 80, clarity: 80, confidence: 80 },
           timestamp: new Date()
-        }]
+        }],
+        currentContent: undefined
       }],
     })),
   updateGoal: (id, updates) =>

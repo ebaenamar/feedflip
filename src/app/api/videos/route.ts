@@ -110,7 +110,7 @@ export async function GET(request: Request) {
     });
 
     // Transform video items to include required fields
-    const videos = videosDetails.data.items.map((item, index) => ({
+    const videos = videosDetails.data.items.map(item => ({
       id: item.id,
       snippet: {
         title: item.snippet?.title || '',

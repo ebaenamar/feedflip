@@ -8,7 +8,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import { useProgress } from '@/hooks/useProgress';
 import ProgressChart from './ProgressChart';
 import GoalForm from './GoalForm';
 import VideoPreview from './VideoPreview';

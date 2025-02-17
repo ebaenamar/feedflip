@@ -13,7 +13,7 @@ interface EmotionalChartProps {
 
 export default function EmotionalChart({ emotionalStates, goalId }: EmotionalChartProps) {
   const { goals } = useGoals();
-  const [_hoveredPoint, setHoveredPoint] = useState<{ date: string; metric: string; value: number } | null>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<{ date: string; metric: string; value: number } | null>(null);
   const [compareWithGoalId, setCompareWithGoalId] = useState<string | null>(null);
 
   const trends = useMemo(() => analyzeTrends(emotionalStates), [emotionalStates]);
@@ -159,12 +159,21 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
                       })}
                       onMouseLeave={() => setHoveredPoint(null)}
                     >
-                      <circle
-                        cx={endX}
-                        cy={endY}
-                        r="4"
-                        fill="white"
-                        stroke={
+                      <g>
+                        {hoveredPoint?.metric === metric && hoveredPoint?.date === point.date && (
+                          <circle
+                            cx={endX}
+                            cy={endY}
+                            r="6"
+                            fill="rgba(99, 102, 241, 0.1)"
+                          />
+                        )}
+                        <circle
+                          cx={endX}
+                          cy={endY}
+                          r="4"
+                          fill="white"
+                          stroke={
                         metric === 'energy' ? '#6366f1' :
                         metric === 'positivity' ? '#22c55e' :
                         metric === 'clarity' ? '#f59e0b' :

@@ -11,6 +11,8 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 
 const queryClient = new QueryClient();
 
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?q=80&w=400&h=300&fit=crop';
+
 interface Video {
   id: string;
   snippet: {
@@ -55,7 +57,7 @@ function VideoFeedContent() {
             title: 'Setting and Achieving Your Goals',
             thumbnails: {
               high: {
-                url: 'https://picsum.photos/400/300'
+                url: FALLBACK_IMAGE
               }
             },
             channelTitle: 'Personal Growth Channel',
@@ -69,7 +71,7 @@ function VideoFeedContent() {
             title: 'Mindfulness for Success',
             thumbnails: {
               high: {
-                url: 'https://picsum.photos/400/300'
+                url: FALLBACK_IMAGE
               }
             },
             channelTitle: 'Wellness & Growth',
@@ -188,6 +190,11 @@ function VideoFeedContent() {
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
+                  onError={(e) => {
+                    const imgElement = e.target as HTMLImageElement;
+                    imgElement.src = FALLBACK_IMAGE;
+                  }}
+                  unoptimized
                 />
               </div>
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />

@@ -2,48 +2,38 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useGoals } from '@/hooks/useGoals';
+import GoalModal from './GoalModal';
+import EmotionalChart from './EmotionalChart';
 
-interface Goal {
-  id: string;
-  title: string;
-  description: string;
-  targetDate: Date;
-  progress: number;
-  category: 'personal' | 'professional' | 'health' | 'relationships' | 'learning';
-  emotionalState: 'excited' | 'motivated' | 'challenged' | 'accomplished';
-  milestones: {
-    id: string;
-    title: string;
-    completed: boolean;
-  }[];
-}
+
 
 
 
 export default function GoalTracker() {
-  const [goals] = useState<Goal[]>([
-    {
-      id: '1',
-      title: 'Run a Marathon',
-      description: 'Train and complete my first full marathon',
-      targetDate: new Date('2024-12-31'),
-      progress: 35,
-      category: 'health',
-      emotionalState: 'motivated',
-      milestones: [
-        { id: '1', title: 'Complete 5K training', completed: true },
-        { id: '2', title: 'Run half marathon', completed: false },
-        { id: '3', title: 'Establish nutrition plan', completed: true }
-      ]
-    }
-  ]);
-  const [activeGoal, setActiveGoal] = useState<string | null>(null);
+  const { goals, activeGoalId, setActiveGoal, updateGoal } = useGoals();
+  const [showAddGoal, setShowAddGoal] = useState(false);
 
-  const emotionColors = {
-    excited: 'bg-yellow-100 text-yellow-800',
-    motivated: 'bg-green-100 text-green-800',
-    challenged: 'bg-purple-100 text-purple-800',
-    accomplished: 'bg-blue-100 text-blue-800'
+  const getEmotionalStateColor = (state: EmotionalState) => {
+    const avgPositivity = state.current.positivity;
+    const avgEnergy = state.current.energy;
+    
+    if (avgEnergy > 70 && avgPositivity > 70) return 'bg-yellow-100 text-yellow-800'; // Excited
+    if (avgEnergy > 70 && avgPositivity < 30) return 'bg-red-100 text-red-800';     // Anxious
+    if (avgEnergy < 30 && avgPositivity < 30) return 'bg-blue-100 text-blue-800';   // Sad
+    if (avgEnergy < 30 && avgPositivity > 70) return 'bg-green-100 text-green-800'; // Content
+    return 'bg-purple-100 text-purple-800'; // Neutral
+  };
+
+  const getEmotionalStateLabel = (state: EmotionalState) => {
+    const avgPositivity = state.current.positivity;
+    const avgEnergy = state.current.energy;
+    
+    if (avgEnergy > 70 && avgPositivity > 70) return 'Excited';
+    if (avgEnergy > 70 && avgPositivity < 30) return 'Anxious';
+    if (avgEnergy < 30 && avgPositivity < 30) return 'Down';
+    if (avgEnergy < 30 && avgPositivity > 70) return 'Content';
+    return 'Neutral';
   };
 
   const categoryIcons = {
@@ -62,7 +52,7 @@ export default function GoalTracker() {
           <p className="mt-2 text-lg text-gray-600">Set goals, track progress, and get inspired</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {goals.map((goal) => (
             <motion.div
               key={goal.id}
@@ -70,15 +60,43 @@ export default function GoalTracker() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-lg shadow-md overflow-hidden"
             >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl">{categoryIcons[goal.category]}</span>
                     <h3 className="text-xl font-semibold text-gray-900">{goal.title}</h3>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${emotionColors[goal.emotionalState]}`}>
-                    {goal.emotionalState}
-                  </span>
+                  <div className="space-y-2">
+                    <span className={`px-3 py-1 rounded-full text-sm ${getEmotionalStateColor(goal.emotionalStates[0])}`}>
+                      {getEmotionalStateLabel(goal.emotionalStates[0])}
+                    </span>
+                    <div className="flex flex-col sm:flex-row gap-2 text-xs text-gray-500">
+                      <div className="flex-1">
+                        <div className="flex justify-between mb-1">
+                          <span>Energy</span>
+                          <span>{goal.emotionalStates[0].current.energy}%</span>
+                        </div>
+                        <div className="h-1 bg-gray-200 rounded overflow-hidden">
+                          <div 
+                            className="h-full bg-indigo-500" 
+                            style={{ width: `${goal.emotionalStates[0].current.energy}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between mb-1">
+                          <span>Positivity</span>
+                          <span>{goal.emotionalStates[0].current.positivity}%</span>
+                        </div>
+                        <div className="h-1 bg-gray-200 rounded overflow-hidden">
+                          <div 
+                            className="h-full bg-green-500" 
+                            style={{ width: `${goal.emotionalStates[0].current.positivity}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <p className="text-gray-600 mb-4">{goal.description}</p>
@@ -115,7 +133,12 @@ export default function GoalTracker() {
                           type="checkbox"
                           checked={milestone.completed}
                           onChange={() => {
-                            // Update milestone completion
+                            const updatedMilestones = [...goal.milestones];
+                            updatedMilestones[parseInt(milestone.id)] = {
+                              ...milestone,
+                              completed: !milestone.completed
+                            };
+                            updateGoal(goal.id, { milestones: updatedMilestones });
                           }}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                         />
@@ -127,12 +150,12 @@ export default function GoalTracker() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex justify-between items-center">
+                <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                   <span className="text-sm text-gray-500">
                     Target: {new Date(goal.targetDate).toLocaleDateString()}
                   </span>
                   <button
-                    onClick={() => setActiveGoal(activeGoal === goal.id ? null : goal.id)}
+                    onClick={() => setActiveGoal(activeGoalId === goal.id ? null : goal.id)}
                     className="text-sm text-indigo-600 hover:text-indigo-800"
                   >
                     {activeGoal === goal.id ? 'Hide Content' : 'Show Inspiring Content'}
@@ -140,13 +163,17 @@ export default function GoalTracker() {
                 </div>
 
                 {/* Recommended Content */}
-                {activeGoal === goal.id && (
+                {activeGoalId === goal.id && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="mt-4 pt-4 border-t"
+                    className="mt-4 pt-4 border-t space-y-4"
                   >
+                    <EmotionalChart 
+                      emotionalStates={goal.emotionalStates}
+                      goalId={goal.id}
+                    />
                     <h4 className="text-sm font-medium text-gray-900 mb-2">Curated Content for You</h4>
                     <div className="space-y-3">
                       {/* This would be populated with actual recommendations */}
@@ -170,7 +197,7 @@ export default function GoalTracker() {
 
           {/* Add Goal Button */}
           <motion.button
-            onClick={() => alert('Coming soon: Add new goals!')}
+            onClick={() => setShowAddGoal(true)}
             className="h-full min-h-[200px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center p-6 hover:border-indigo-500 hover:bg-indigo-50 transition-colors"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -181,6 +208,11 @@ export default function GoalTracker() {
             </div>
           </motion.button>
         </div>
+
+        <GoalModal 
+          isOpen={showAddGoal}
+          onClose={() => setShowAddGoal(false)}
+        />
       </div>
     </section>
   );

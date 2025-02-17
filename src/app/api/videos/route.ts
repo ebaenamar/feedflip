@@ -13,10 +13,40 @@ interface AlgorithmPrompt {
 
 export async function GET(request: Request) {
   if (!process.env.YOUTUBE_API_KEY || !process.env.OPENAI_API_KEY) {
-    return NextResponse.json(
-      { error: 'Missing API configuration' },
-      { status: 500 }
-    );
+    // Return mock data for development
+    return NextResponse.json({
+      videos: [
+        {
+          id: 'mock1',
+          snippet: {
+            title: 'Setting and Achieving Your Goals',
+            thumbnails: {
+              high: {
+                url: 'https://picsum.photos/400/300'
+              }
+            },
+            channelTitle: 'Personal Growth Channel',
+            description: 'Learn how to set and achieve your personal goals effectively.'
+          },
+          aiInsights: 'This video provides practical advice on goal setting and achievement.'
+        },
+        {
+          id: 'mock2',
+          snippet: {
+            title: 'Mindfulness for Success',
+            thumbnails: {
+              high: {
+                url: 'https://picsum.photos/400/300'
+              }
+            },
+            channelTitle: 'Wellness & Growth',
+            description: 'Discover how mindfulness can help you achieve your goals.'
+          },
+          aiInsights: 'Focuses on mental well-being and personal development.'
+        }
+      ],
+      nextPageToken: null
+    });
   }
   const { searchParams } = new URL(request.url);
   const pageToken = searchParams.get('pageToken');

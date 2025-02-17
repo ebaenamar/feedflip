@@ -9,6 +9,8 @@ interface GoalModalProps {
   onClose: () => void;
 }
 
+const inputClasses = "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900";
+
 export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
   const { addGoal } = useGoals();
   const [formData, setFormData] = useState({
@@ -16,7 +18,7 @@ export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
     description: '',
     category: 'personal',
     targetDate: '',
-    milestones: [''],
+    milestone: '',
     emotional: {
       energy: 50,
       positivity: 50,
@@ -34,29 +36,13 @@ export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
       targetDate: new Date(formData.targetDate),
       progress: 0,
       emotional: formData.emotional,
-      milestones: formData.milestones.map((title, index) => ({
-        id: index.toString(),
-        title,
+      milestones: [{
+        id: '1',
+        title: formData.milestone,
         completed: false
-      }))
+      }]
     });
     onClose();
-  };
-
-  const addMilestone = () => {
-    setFormData(prev => ({
-      ...prev,
-      milestones: [...prev.milestones, '']
-    }));
-  };
-
-  const updateMilestone = (index: number, value: string) => {
-    const newMilestones = [...formData.milestones];
-    newMilestones[index] = value;
-    setFormData(prev => ({
-      ...prev,
-      milestones: newMilestones
-    }));
   };
 
   return (
@@ -86,7 +72,7 @@ export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
                   <input
                     type="text"
                     required
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className={inputClasses}
                     value={formData.title}
                     onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   />
@@ -96,7 +82,7 @@ export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
                   <label className="block text-sm font-medium text-gray-700">Description</label>
                   <textarea
                     required
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className={inputClasses}
                     value={formData.description}
                     onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   />
@@ -106,7 +92,7 @@ export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
                   <label className="block text-sm font-medium text-gray-700">Category</label>
                   <select
                     required
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className={inputClasses}
                     value={formData.category}
                     onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
                   >
@@ -123,34 +109,22 @@ export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
                   <input
                     type="date"
                     required
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className={inputClasses}
                     value={formData.targetDate}
                     onChange={e => setFormData(prev => ({ ...prev, targetDate: e.target.value }))}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Milestones</label>
-                  <div className="space-y-2">
-                    {formData.milestones.map((milestone, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        required
-                        placeholder={`Milestone ${index + 1}`}
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        value={milestone}
-                        onChange={e => updateMilestone(index, e.target.value)}
-                      />
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addMilestone}
-                      className="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800"
-                    >
-                      + Add Another Milestone
-                    </button>
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700">Key Milestone</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="What's your main milestone?"
+                    className={inputClasses}
+                    value={formData.milestone}
+                    onChange={e => setFormData(prev => ({ ...prev, milestone: e.target.value }))}
+                  />
                 </div>
 
                 <div>

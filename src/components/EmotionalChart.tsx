@@ -12,7 +12,6 @@ interface EmotionalChartProps {
 
 export default function EmotionalChart({ emotionalStates, goalId }: EmotionalChartProps) {
   const { goals } = useGoals();
-
   const [compareWithGoalId, setCompareWithGoalId] = useState<string | null>(null);
 
   const trends = useMemo(() => analyzeTrends(emotionalStates), [emotionalStates]);
@@ -41,6 +40,7 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
     a.click();
     document.body.removeChild(a);
   };
+
   const chartData = useMemo(() => {
     return emotionalStates.slice(0, 7).reverse().map((state) => ({
       date: new Date(state.timestamp).toLocaleDateString(),
@@ -50,6 +50,69 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
       confidence: state.current.confidence,
     }));
   }, [emotionalStates]);
+
+  const renderMetricChart = (metric: string) => (
+    <div key={metric} className="space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="text-xs text-gray-600 capitalize">{metric}</span>
+        <span className="text-xs text-gray-600">
+          {chartData[chartData.length - 1]?.[metric]}%
+        </span>
+      </div>
+      <div className="relative h-2 bg-gray-100 rounded">
+        {chartData.map((point, index) => {
+          const previousPoint = chartData[index - 1];
+          if (!previousPoint) return null;
+
+          const startX = `${(index - 1) * (100 / (chartData.length - 1))}%`;
+          const endX = `${index * (100 / (chartData.length - 1))}%`;
+          const startY = `${100 - previousPoint[metric]}%`;
+          const endY = `${100 - point[metric]}%`;
+
+          return (
+            <svg
+              key={point.date}
+              className="absolute inset-0 h-full w-full"
+              preserveAspectRatio="none"
+            >
+              <line
+                x1={startX}
+                y1={startY}
+                x2={endX}
+                y2={endY}
+                stroke={
+                  metric === 'energy' ? '#6366f1' :
+                  metric === 'positivity' ? '#22c55e' :
+                  metric === 'clarity' ? '#f59e0b' :
+                  '#8b5cf6'
+                }
+                strokeWidth="2"
+              />
+              <circle
+                cx={endX}
+                cy={endY}
+                r="4"
+                fill="white"
+                stroke={
+                  metric === 'energy' ? '#6366f1' :
+                  metric === 'positivity' ? '#22c55e' :
+                  metric === 'clarity' ? '#f59e0b' :
+                  '#8b5cf6'
+                }
+                strokeWidth="2"
+                className="transition-transform duration-200 hover:scale-150"
+              />
+            </svg>
+          );
+        })}
+      </div>
+      <div className="flex justify-between text-[10px] sm:text-xs text-gray-400 overflow-x-auto">
+        {chartData.map((point) => (
+          <span key={point.date}>{point.date}</span>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="mt-4 p-3 sm:p-4 bg-white rounded-lg shadow overflow-x-hidden">
@@ -66,26 +129,24 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
         </button>
       </div>
       
-      {/* Trend Analysis */}
       <div className="mb-6 space-y-2 text-xs sm:text-sm">
         {trends.map(({ dimension, message, trend }) => (
           <div key={dimension} className="flex items-center space-x-2 text-sm">
             <div 
-              className={`w-2 h-2 rounded-full`}
+              className="w-2 h-2 rounded-full"
               style={{ backgroundColor: getEmotionColor(dimension) }}
             />
-            <span className={`
-              ${trend === 'increasing' ? 'text-green-600' : ''}
-              ${trend === 'decreasing' ? 'text-red-600' : ''}
-              ${trend === 'stable' ? 'text-gray-600' : ''}
-            `}>
+            <span className={
+              trend === 'increasing' ? 'text-green-600' :
+              trend === 'decreasing' ? 'text-red-600' :
+              'text-gray-600'
+            }>
               {message}
             </span>
           </div>
         ))}
       </div>
 
-      {/* Goal Comparison */}
       <div className="mb-6">
         <select
           value={compareWithGoalId || ''}
@@ -113,79 +174,9 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
       </div>
 
       <div className="space-y-4">
-        {['energy', 'positivity', 'clarity', 'confidence'].map((metric) => (
-          <div key={metric} className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-gray-600 capitalize">{metric}</span>
-              <span className="text-xs text-gray-600">
-                {chartData[chartData.length - 1]?.[metric]}%
-              </span>
-            </div>
-            <div className="relative h-2 bg-gray-100 rounded">
-              {chartData.map((point, index) => {
-                const previousPoint = chartData[index - 1];
-                if (!previousPoint) return null;
-
-                const startX = `${(index - 1) * (100 / (chartData.length - 1))}%`;
-                const endX = `${index * (100 / (chartData.length - 1))}%`;
-                const startY = `${100 - previousPoint[metric]}%`;
-                const endY = `${100 - point[metric]}%`;
-
-                return (
-                  <svg
-                    key={point.date}
-                    className="absolute inset-0 h-full w-full"
-                    preserveAspectRatio="none"
-                  >
-                    <line
-                      x1={startX}
-                      y1={startY}
-                      x2={endX}
-                      y2={endY}
-                      stroke={
-                        metric === 'energy' ? '#6366f1' :
-                        metric === 'positivity' ? '#22c55e' :
-                        metric === 'clarity' ? '#f59e0b' :
-                        '#8b5cf6'
-                      }
-                      strokeWidth="2"
-                    />
-                    <g
-                      className="group"
-                    >
-                      <g>
-                        <circle
-                          className="transition-all duration-200"
-                          style={{
-                            r: 4
-                          }}
-                          cx={endX}
-                          cy={endY}
-                          r="4"
-                          fill="white"
-                          stroke={
-                        metric === 'energy' ? '#6366f1' :
-                        metric === 'positivity' ? '#22c55e' :
-                        metric === 'clarity' ? '#f59e0b' :
-                        '#8b5cf6'
-                      }
-                        strokeWidth="2"
-                      />
-                    </g>
-                  </svg>
-                );
-              })}
-            </div>
-            <div className="flex justify-between text-[10px] sm:text-xs text-gray-400 overflow-x-auto">
-              {chartData.map((point) => (
-                <span key={point.date}>{point.date}</span>
-              ))}
-            </div>
-          </div>
-        ))}
+        {['energy', 'positivity', 'clarity', 'confidence'].map(renderMetricChart)}
       </div>
 
-      {/* Recommendations */}
       {recommendations.length > 0 && (
         <div className="mt-6 border-t pt-4">
           <h4 className="text-sm font-medium text-gray-900 mb-3">Recommended Actions</h4>

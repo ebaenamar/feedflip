@@ -4,9 +4,12 @@ import { useState } from 'react';
 import Image from 'next/image';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import { usePreferences } from '@/contexts/PreferencesContext';
+
+const queryClient = new QueryClient();
 
 interface Video {
   id: string;
@@ -29,23 +32,32 @@ interface VideoResponse {
   aiInsights?: string;
 }
 
-export default function VideoFeed() {
+function VideoFeedContent() {
   const [topic, setTopic] = useState('');
   const [searchInput, setSearchInput] = useState('');
 
   const { preferences } = usePreferences();
   
   const fetchVideos = async ({ pageParam = '' }) => {
-    const params = new URLSearchParams({
-      pageToken: pageParam,
-      topic: topic,
-      outOfEchoChamber: preferences.outOfEchoChamber.toString(),
-      contentTypes: preferences.contentTypes.join(','),
-      activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
-    });
-    const response = await fetch(`/api/videos?${params}`);
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.json() as Promise<VideoResponse>;
+    try {
+      const params = new URLSearchParams({
+        pageToken: pageParam,
+        topic: topic,
+        outOfEchoChamber: preferences.outOfEchoChamber.toString(),
+        contentTypes: preferences.contentTypes.join(','),
+        activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
+      });
+      const response = await fetch(`/api/videos?${params}`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+      return data as VideoResponse;
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+      return {
+        videos: [],
+        nextPageToken: null
+      };
+    }
   };
 
   const {
@@ -66,8 +78,6 @@ export default function VideoFeed() {
     setTopic(searchInput);
   };
 
-
-
   if (isLoading) return (
     <div className="flex flex-col justify-center items-center min-h-[400px] space-y-4">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -77,24 +87,11 @@ export default function VideoFeed() {
       )}
     </div>
   );
-  
-  if (isError) return (
-    <div className="flex flex-col justify-center items-center min-h-[400px] space-y-4">
-      <div className="text-red-600 mb-2">
-        <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-      </div>
-      <p className="text-red-600 font-medium">Error loading videos</p>
-      <p className="text-gray-500 text-sm">Please check your connection and try again</p>
-      <button 
-        onClick={() => window.location.reload()}
-        className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-      >
-        Retry
-      </button>
-    </div>
-  );
+
+  if (isError) {
+    console.error('Error loading videos');
+    return null;
+  }
 
   const allVideos = data?.pages.flatMap((page) => page.videos) ?? [];
 
@@ -146,7 +143,7 @@ export default function VideoFeed() {
         }
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
       >
-        {allVideos.map((video: Video, index: number) => (
+        {allVideos.map((video: Video) => (
           <div
             key={video.id}
             className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-all duration-300 opacity-0 animate-fadeIn"
@@ -159,28 +156,32 @@ export default function VideoFeed() {
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
-                  priority={index < 4}
                 />
               </div>
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />
             </div>
-            <div className="p-6">
-              <h3 className="font-bold text-lg sm:text-xl lg:text-2xl text-gray-900 mb-2 line-clamp-2 tracking-tight">{video.snippet.title}</h3>
-              <p className="text-sm sm:text-base font-medium text-gray-700 mb-3 sm:mb-4">{video.snippet.channelTitle}</p>
-              <div className="flex justify-between items-center">
-                <a
-                  href={`https://www.youtube.com/shorts/${video.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center px-3 sm:px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors w-full sm:w-auto justify-center"
-                >
-                  Watch Short
-                </a>
-              </div>
+            <div className="p-4">
+              <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2">
+                {video.snippet.title}
+              </h3>
+              <p className="text-sm text-gray-600 mb-2">{video.snippet.channelTitle}</p>
+              {video.aiInsights && (
+                <div className="text-xs text-indigo-600 italic">
+                  {video.aiInsights}
+                </div>
+              )}
             </div>
           </div>
         ))}
       </InfiniteScroll>
     </div>
+  );
+}
+
+export default function VideoFeed() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <VideoFeedContent />
+    </QueryClientProvider>
   );
 }

@@ -33,7 +33,16 @@ export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
       category: formData.category as 'personal' | 'professional' | 'health' | 'relationships' | 'learning',
       targetDate: new Date(formData.targetDate),
       progress: 0,
-      emotionalState: 'excited',
+      emotionalStates: [{
+        current: formData.emotional,
+        target: {
+          energy: 80,
+          positivity: 80,
+          clarity: 80,
+          confidence: 80
+        },
+        timestamp: new Date()
+      }],
       milestones: formData.milestones.map((title, index) => ({
         id: index.toString(),
         title,

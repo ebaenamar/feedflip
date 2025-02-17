@@ -46,7 +46,7 @@ interface GoalStore {
   getRecommendedContent: (goalId: string) => ContentSuggestion | undefined;
 }
 
-export const useGoals = create<GoalStore>((set) => ({
+export const useGoals = create<GoalStore>((set, get) => ({
   goals: [],
   activeGoalId: null,
   addGoal: (goal) =>

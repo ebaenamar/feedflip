@@ -41,6 +41,16 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
     document.body.removeChild(a);
   };
 
+  type MetricType = 'energy' | 'positivity' | 'clarity' | 'confidence';
+  
+  interface ChartDataPoint {
+    date: string;
+    energy: number;
+    positivity: number;
+    clarity: number;
+    confidence: number;
+  }
+
   const chartData = useMemo(() => {
     return emotionalStates.slice(0, 7).reverse().map((state) => ({
       date: new Date(state.timestamp).toLocaleDateString(),
@@ -49,9 +59,9 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
       clarity: state.current.clarity,
       confidence: state.current.confidence,
     }));
-  }, [emotionalStates]);
+  }, [emotionalStates]) as ChartDataPoint[];
 
-  const renderMetricChart = (metric: string) => (
+  const renderMetricChart = (metric: MetricType) => (
     <div key={metric} className="space-y-2">
       <div className="flex justify-between items-center">
         <span className="text-xs text-gray-600 capitalize">{metric}</span>
@@ -174,7 +184,7 @@ export default function EmotionalChart({ emotionalStates, goalId }: EmotionalCha
       </div>
 
       <div className="space-y-4">
-        {['energy', 'positivity', 'clarity', 'confidence'].map(renderMetricChart)}
+        {(['energy', 'positivity', 'clarity', 'confidence'] as const).map(renderMetricChart)}
       </div>
 
       {recommendations.length > 0 && (

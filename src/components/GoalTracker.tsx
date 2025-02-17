@@ -158,7 +158,7 @@ export default function GoalTracker() {
                     onClick={() => setActiveGoal(activeGoalId === goal.id ? null : goal.id)}
                     className="text-sm text-indigo-600 hover:text-indigo-800"
                   >
-                    {activeGoal === goal.id ? 'Hide Content' : 'Show Inspiring Content'}
+                    {activeGoalId === goal.id ? 'Hide Content' : 'Show Inspiring Content'}
                   </button>
                 </div>
 

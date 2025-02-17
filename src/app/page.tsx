@@ -5,6 +5,7 @@ import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import UserPreferences from '@/components/UserPreferences';
 import WellnessProfile from '@/components/WellnessProfile';
+import GoalTracker from '@/components/GoalTracker';
 
 export default function Home() {
   return (
@@ -26,8 +27,7 @@ export default function Home() {
       <main className="pt-16">
         <Hero />
         <Features />
-        <UserPreferences />
-        <WellnessProfile />
+        <GoalTracker />
         <VideoFeed />
       </main>
 

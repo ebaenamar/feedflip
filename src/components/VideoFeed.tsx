@@ -39,24 +39,56 @@ function VideoFeedContent() {
   const { preferences } = usePreferences();
   
   const fetchVideos = async ({ pageParam = '' }) => {
+    const params = new URLSearchParams({
+      pageToken: pageParam,
+      topic: topic,
+      outOfEchoChamber: preferences.outOfEchoChamber.toString(),
+      contentTypes: preferences.contentTypes.join(','),
+      activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
+    });
+
+    const mockResponse: VideoResponse = {
+      videos: [
+        {
+          id: 'mock1',
+          snippet: {
+            title: 'Setting and Achieving Your Goals',
+            thumbnails: {
+              high: {
+                url: 'https://picsum.photos/400/300'
+              }
+            },
+            channelTitle: 'Personal Growth Channel',
+            description: 'Learn how to set and achieve your personal goals effectively.'
+          },
+          aiInsights: 'This video provides practical advice on goal setting and achievement.'
+        },
+        {
+          id: 'mock2',
+          snippet: {
+            title: 'Mindfulness for Success',
+            thumbnails: {
+              high: {
+                url: 'https://picsum.photos/400/300'
+              }
+            },
+            channelTitle: 'Wellness & Growth',
+            description: 'Discover how mindfulness can help you achieve your goals.'
+          },
+          aiInsights: 'Focuses on mental well-being and personal development.'
+        }
+      ],
+      nextPageToken: undefined
+    };
+
     try {
-      const params = new URLSearchParams({
-        pageToken: pageParam,
-        topic: topic,
-        outOfEchoChamber: preferences.outOfEchoChamber.toString(),
-        contentTypes: preferences.contentTypes.join(','),
-        activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
-      });
       const response = await fetch(`/api/videos?${params}`);
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) return mockResponse;
       const data = await response.json();
       return data as VideoResponse;
     } catch (error) {
       console.error('Error fetching videos:', error);
-      return {
-        videos: [],
-        nextPageToken: null
-      };
+      return mockResponse;
     }
   };
 

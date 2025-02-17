@@ -8,6 +8,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import { usePreferences } from '@/contexts/PreferencesContext';
+import { useProgress } from '@/hooks/useProgress';
+import ProgressChart from './ProgressChart';
+import GoalForm from './GoalForm';
 import VideoPreview from './VideoPreview';
 
 const queryClient = new QueryClient();
@@ -111,13 +114,17 @@ function VideoFeedContent() {
 
   return (
     <div id="feed" className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
+      <div className="mb-8 space-y-6 sticky top-0 z-10 -mx-3 px-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 py-4 bg-gradient-to-b from-white via-white to-transparent">
+        <ProgressChart />
+        <GoalForm />
+      </div>
       {allVideos.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <p className="text-gray-500 mb-4">No growth content found for your journey</p>
           <p className="text-sm text-gray-400">Try exploring different topics or adjusting your goals</p>
         </div>
       )}
-      <div className="max-w-3xl mx-auto mb-6 sm:mb-12">
+      <div className="max-w-3xl mx-auto mb-6 sm:mb-12 relative z-0">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2 text-gray-600">
             <AdjustmentsHorizontalIcon className="h-5 w-5" />

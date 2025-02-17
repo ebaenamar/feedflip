@@ -4,49 +4,49 @@ import { BeakerIcon, LightBulbIcon, GlobeAltIcon, SparklesIcon } from '@heroicon
 
 const features = [
   {
-    name: 'Emotional Intelligence',
+    name: 'Goal-Aligned Content',
     description: {
-      main: 'Track and understand your emotional journey towards your goals.',
+      main: 'Transform your social feed into a source of motivation and guidance.',
       details: [
-        'Monitor emotional states and patterns',
-        'Get personalized emotional support',
-        'Build resilience through guided content'
-      ]
-    },
-    icon: SparklesIcon,
-  },
-  {
-    name: 'Goal Achievement',
-    description: {
-      main: 'Set and achieve meaningful goals with structured support.',
-      details: [
-        'Break down goals into actionable steps',
-        'Track progress with visual metrics',
-        'Celebrate milestones and achievements'
+        'Find content that matches your goals',
+        'Discover success stories and tips',
+        'Learn from relevant experiences'
       ]
     },
     icon: BeakerIcon,
   },
   {
-    name: 'Curated Inspiration',
+    name: 'Mindful Consumption',
     description: {
-      main: 'Discover content that aligns with your personal growth journey.',
+      main: 'Make social media work for your mental wellbeing.',
       details: [
-        'Get motivation from success stories',
-        'Learn from expert insights and advice',
-        'Find relatable experiences and guidance'
+        'Filter out negative content',
+        'Focus on uplifting stories',
+        'Balance entertainment and growth'
+      ]
+    },
+    icon: SparklesIcon,
+  },
+  {
+    name: 'Smart Discovery',
+    description: {
+      main: 'Find the right content at the right time.',
+      details: [
+        'Personalized recommendations',
+        'Trending growth content',
+        'Expert advice and insights'
       ]
     },
     icon: LightBulbIcon,
   },
   {
-    name: 'Holistic Growth',
+    name: 'Community Learning',
     description: {
-      main: 'Develop all aspects of your future self through balanced content.',
+      main: 'Connect with others on similar growth journeys.',
       details: [
-        'Personal and professional development',
-        'Mental and emotional wellbeing',
-        'Social and relationship growth'
+        'Find relatable experiences',
+        'Share progress and insights',
+        'Learn from peer success stories'
       ]
     },
     icon: GlobeAltIcon,
@@ -60,12 +60,12 @@ export default function Features() {
     <div id="features" className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="lg:text-center">
-          <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Your Growth Journey</h2>
+          <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Social Media for Growth</h2>
           <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            Become Your Best Self
+            Feed Your Future Self
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-            Transform social media into a powerful tool for personal growth. Set meaningful goals, track your progress, and get the emotional support you need.
+            Turn your social media time into personal growth time. Discover content that inspires, motivates, and guides you toward your goals.
           </p>
         </div>
 

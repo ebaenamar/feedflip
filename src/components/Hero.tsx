@@ -13,31 +13,31 @@ export default function Hero() {
               className="sm:text-center lg:text-left"
             >
               <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                <span className="block">Achieve Your</span>
-                <span className="block text-indigo-600">Future Self</span>
+                <span className="block">Social Media for</span>
+                <span className="block text-indigo-600">Personal Growth</span>
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                Set meaningful life goals and let FeedFlip curate inspiring social content that helps you grow.
-                We&apos;re your AI companion on the journey to becoming your best self.
+                Transform your social media feed into a source of inspiration and growth. Let FeedFlip curate content
+                that helps you achieve your goals and become your best self.
               </p>
               <div className="mt-4 space-y-2">
                 <div className="flex items-center space-x-2">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center">
                     <span className="text-indigo-600 text-sm">1</span>
                   </span>
-                  <span className="text-gray-600">Set meaningful personal and professional goals</span>
+                  <span className="text-gray-600">Tell us about your goals and interests</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center">
                     <span className="text-indigo-600 text-sm">2</span>
                   </span>
-                  <span className="text-gray-600">Get personalized content to inspire and guide you</span>
+                  <span className="text-gray-600">Discover content aligned with your growth journey</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center">
                     <span className="text-indigo-600 text-sm">3</span>
                   </span>
-                  <span className="text-gray-600">Track progress and grow with emotional support</span>
+                  <span className="text-gray-600">Learn and grow from curated social content</span>
                 </div>
               </div>
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
@@ -46,7 +46,7 @@ export default function Hero() {
                     href="#preferences"
                     className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
                   >
-                    Set Your Goals
+                    Get Started
                   </a>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">

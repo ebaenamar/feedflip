@@ -52,29 +52,54 @@ interface GoalStore {
   getRecommendedContent: (goalId: string) => ContentSuggestion | undefined;
 }
 
+// Load initial state from localStorage
+const loadFromStorage = () => {
+  if (typeof window === 'undefined') return [];
+  const saved = localStorage.getItem('goals');
+  return saved ? JSON.parse(saved) : [];
+};
+
+// Save state to localStorage
+const saveToStorage = (goals: Goal[]) => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('goals', JSON.stringify(goals));
+};
+
 export const useGoals = create<GoalStore>((set, get) => ({
-  goals: [],
+  goals: loadFromStorage(),
   activeGoalId: null,
   addGoal: (goal) =>
     set((state) => ({
-      goals: [...state.goals, { 
-        ...goal, 
-        id: Date.now().toString(),
-        emotionalStates: [{
-          current: goal.emotional || { energy: 50, positivity: 50, clarity: 50, confidence: 50 },
-          target: { energy: 80, positivity: 80, clarity: 80, confidence: 80 },
-          timestamp: new Date()
-        }],
-        currentContent: undefined
-      }],
+      goals: (() => {
+        const newGoals = [...state.goals, { 
+          ...goal, 
+          id: Date.now().toString(),
+          emotionalStates: [{
+            current: goal.emotional || { energy: 50, positivity: 50, clarity: 50, confidence: 50 },
+            target: { energy: 80, positivity: 80, clarity: 80, confidence: 80 },
+            timestamp: new Date()
+          }],
+          currentContent: undefined
+        }];
+        saveToStorage(newGoals);
+        return newGoals;
+      })()
     })),
   updateGoal: (id, updates) =>
     set((state) => ({
-      goals: state.goals.map((g) => (g.id === id ? { ...g, ...updates } : g)),
+      goals: (() => {
+        const newGoals = state.goals.map((g) => (g.id === id ? { ...g, ...updates } : g));
+        saveToStorage(newGoals);
+        return newGoals;
+      })()
     })),
   deleteGoal: (id) =>
     set((state) => ({
-      goals: state.goals.filter((g) => g.id !== id),
+      goals: (() => {
+        const newGoals = state.goals.filter((g) => g.id !== id);
+        saveToStorage(newGoals);
+        return newGoals;
+      })()
     })),
   setActiveGoal: (id) =>
     set(() => ({
@@ -83,20 +108,24 @@ export const useGoals = create<GoalStore>((set, get) => ({
 
   updateEmotionalState: (goalId, state) =>
     set((store) => ({
-      goals: store.goals.map(goal =>
-        goal.id === goalId
-          ? {
-              ...goal,
-              emotionalStates: [
-                {
-                  ...state,
-                  timestamp: new Date()
-                },
-                ...goal.emotionalStates
-              ]
-            }
-          : goal
-      )
+      goals: (() => {
+        const newGoals = store.goals.map(goal =>
+          goal.id === goalId
+            ? {
+                ...goal,
+                emotionalStates: [
+                  {
+                    ...state,
+                    timestamp: new Date()
+                  },
+                  ...goal.emotionalStates
+                ]
+              }
+            : goal
+        );
+        saveToStorage(newGoals);
+        return newGoals;
+      })()
     })),
 
   getRecommendedContent: (goalId) =>

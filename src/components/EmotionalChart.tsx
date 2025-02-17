@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+// Removed unused imports
 import { useGoals } from '@/hooks/useGoals';
 import { analyzeTrends, compareGoals, getEmotionColor, generateRecommendations, exportEmotionalData } from '@/utils/emotionalAnalysis';
 import { EmotionalState } from '@/hooks/useGoals';
@@ -13,7 +13,7 @@ interface EmotionalChartProps {
 
 export default function EmotionalChart({ emotionalStates, goalId }: EmotionalChartProps) {
   const { goals } = useGoals();
-  const [hoveredPoint, setHoveredPoint] = useState<{ date: string; metric: string; value: number } | null>(null);
+  const [_hoveredPoint, setHoveredPoint] = useState<{ date: string; metric: string; value: number } | null>(null);
   const [compareWithGoalId, setCompareWithGoalId] = useState<string | null>(null);
 
   const trends = useMemo(() => analyzeTrends(emotionalStates), [emotionalStates]);

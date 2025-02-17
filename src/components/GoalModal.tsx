@@ -30,7 +30,7 @@ export default function GoalModal({ isOpen, onClose }: GoalModalProps) {
     addGoal({
       title: formData.title,
       description: formData.description,
-      category: formData.category as any,
+      category: formData.category as 'personal' | 'professional' | 'health' | 'relationships' | 'learning',
       targetDate: new Date(formData.targetDate),
       progress: 0,
       emotionalState: 'excited',

@@ -28,7 +28,7 @@ const REDIRECT_URI = typeof window !== 'undefined'
   ? `${window.location.origin}/api/spotify/callback`
   : '';
 
-export const useSpotify = create<SpotifyState>((set, get) => ({
+export const useSpotify = create<SpotifyState>((set) => ({
   isConnected: false,
   recentTracks: [],
   currentMood: {

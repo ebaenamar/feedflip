@@ -113,19 +113,19 @@ function VideoFeedContent() {
     <div id="feed" className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
       {allVideos.length === 0 && !isLoading && (
         <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">No videos found matching your criteria</p>
-          <p className="text-sm text-gray-400">Try adjusting your search terms or preferences</p>
+          <p className="text-gray-500 mb-4">No growth content found for your journey</p>
+          <p className="text-sm text-gray-400">Try exploring different topics or adjusting your goals</p>
         </div>
       )}
       <div className="max-w-3xl mx-auto mb-6 sm:mb-12">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2 text-gray-600">
             <AdjustmentsHorizontalIcon className="h-5 w-5" />
-            <span>Active Filters</span>
+            <span>Growth Focus</span>
           </div>
           {preferences.outOfEchoChamber && (
             <span className="text-sm text-indigo-600">
-              Echo Chamber Protection: Active
+              Diverse Perspectives: Active
             </span>
           )}
         </div>
@@ -134,7 +134,7 @@ function VideoFeedContent() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Type 'sad', 'happy', 'motivated' or any topic..."
+            placeholder="Search for inspiration, growth stories, or goal-related content..."
             className="w-full p-3 sm:p-4 pr-10 sm:pr-12 text-base sm:text-lg border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 shadow-sm"
           />
           <button

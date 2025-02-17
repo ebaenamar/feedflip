@@ -4,52 +4,52 @@ import { BeakerIcon, LightBulbIcon, GlobeAltIcon, SparklesIcon } from '@heroicon
 
 const features = [
   {
-    name: 'Design Your Own AI',
+    name: 'Emotional Intelligence',
     description: {
-      main: 'Create and customize your personal content curation algorithms.',
+      main: 'Track and understand your emotional journey towards your goals.',
       details: [
-        'Write natural language rules for content filtering',
-        'Combine multiple algorithms for precise results',
-        'Adjust and fine-tune in real-time'
+        'Monitor emotional states and patterns',
+        'Get personalized emotional support',
+        'Build resilience through guided content'
+      ]
+    },
+    icon: SparklesIcon,
+  },
+  {
+    name: 'Goal Achievement',
+    description: {
+      main: 'Set and achieve meaningful goals with structured support.',
+      details: [
+        'Break down goals into actionable steps',
+        'Track progress with visual metrics',
+        'Celebrate milestones and achievements'
       ]
     },
     icon: BeakerIcon,
   },
   {
-    name: 'Echo Chamber Protection',
+    name: 'Curated Inspiration',
     description: {
-      main: 'Deliberately discover content outside your usual perspective.',
+      main: 'Discover content that aligns with your personal growth journey.',
       details: [
-        'Find opposing viewpoints on topics',
-        'Explore different cultural perspectives',
-        'Balance your content consumption'
-      ]
-    },
-    icon: GlobeAltIcon,
-  },
-  {
-    name: 'Smart Content Filters',
-    description: {
-      main: 'Set precise criteria for the content you want to discover.',
-      details: [
-        'Choose specific content categories',
-        'Set quality and depth thresholds',
-        'Filter by topic and perspective'
+        'Get motivation from success stories',
+        'Learn from expert insights and advice',
+        'Find relatable experiences and guidance'
       ]
     },
     icon: LightBulbIcon,
   },
   {
-    name: 'Continuous Learning',
+    name: 'Holistic Growth',
     description: {
-      main: 'Your feed evolves as you interact and customize preferences.',
+      main: 'Develop all aspects of your future self through balanced content.',
       details: [
-        'Algorithms adapt to your feedback',
-        'Save and modify successful filters',
-        'Share algorithms with others'
+        'Personal and professional development',
+        'Mental and emotional wellbeing',
+        'Social and relationship growth'
       ]
     },
-    icon: SparklesIcon,
+    icon: GlobeAltIcon,
   },
 ];
 
@@ -60,12 +60,12 @@ export default function Features() {
     <div id="features" className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="lg:text-center">
-          <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Your Personal Algorithm</h2>
+          <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Your Growth Journey</h2>
           <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            Take Control of Your Content
+            Become Your Best Self
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-            Design, customize, and fine-tune your own AI-powered content curation algorithms. Break free from generic recommendations.
+            Transform social media into a powerful tool for personal growth. Set meaningful goals, track your progress, and get the emotional support you need.
           </p>
         </div>
 

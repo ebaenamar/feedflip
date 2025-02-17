@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useGoals } from '@/hooks/useGoals';
+import { useGoals, EmotionalState } from '@/hooks/useGoals';
 import GoalModal from './GoalModal';
 import EmotionalChart from './EmotionalChart';
 

@@ -11,7 +11,6 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 
 const queryClient = new QueryClient();
 
-// Use a static image URL that works with Next.js Image optimization
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop';
 
 interface Video {
@@ -26,6 +25,13 @@ interface Video {
     channelTitle: string;
     description: string;
   };
+  statistics?: {
+    viewCount: string;
+    likeCount: string;
+  };
+  player?: {
+    embedHtml: string;
+  };
   aiInsights?: string;
 }
 
@@ -35,27 +41,6 @@ interface VideoResponse {
   aiInsights?: string;
 }
 
-function generateMockVideos(pageParam: string): VideoResponse {
-  const pageNumber = pageParam ? parseInt(pageParam) : 0;
-  return {
-    videos: Array.from({ length: 6 }, (_, i) => ({
-      id: `mock-${pageNumber}-${i}`,
-      snippet: {
-        title: `Goal Setting Tips - Part ${pageNumber * 6 + i + 1}`,
-        thumbnails: {
-          high: {
-            url: FALLBACK_IMAGE
-          }
-        },
-        channelTitle: 'Personal Growth Channel',
-        description: `Learn essential tips for setting and achieving your goals - Part ${pageNumber * 6 + i + 1}`
-      },
-      aiInsights: 'Practical advice for personal development and goal achievement'
-    })),
-    nextPageToken: (pageNumber < 5) ? (pageNumber + 1).toString() : undefined
-  };
-}
-
 function VideoFeedContent() {
   const [topic, setTopic] = useState('');
   const [searchInput, setSearchInput] = useState('');
@@ -63,26 +48,18 @@ function VideoFeedContent() {
   const { preferences } = usePreferences();
   
   const fetchVideos = async ({ pageParam = '' }) => {
-    try {
-      const params = new URLSearchParams({
-        pageToken: pageParam,
-        topic: topic,
-        outOfEchoChamber: preferences.outOfEchoChamber.toString(),
-        contentTypes: preferences.contentTypes.join(','),
-        activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
-      });
+    const params = new URLSearchParams({
+      pageToken: pageParam,
+      topic: topic,
+      outOfEchoChamber: preferences.outOfEchoChamber.toString(),
+      contentTypes: preferences.contentTypes.join(','),
+      activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
+    });
 
-      const response = await fetch(`/api/videos?${params}`);
-      if (!response.ok) {
-        console.log('API error, using mock data');
-        return generateMockVideos(pageParam);
-      }
-      const data = await response.json();
-      return data as VideoResponse;
-    } catch (error) {
-      console.error('Error fetching videos:', error);
-      return generateMockVideos(pageParam);
-    }
+    const response = await fetch(`/api/videos?${params}`);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    return data as VideoResponse;
   };
 
   const {
@@ -114,8 +91,18 @@ function VideoFeedContent() {
   );
 
   if (isError) {
-    console.error('Error loading videos, showing mock data');
-    return null;
+    console.error('Error loading videos');
+    return (
+      <div className="flex flex-col justify-center items-center min-h-[400px] space-y-4">
+        <p className="text-red-600">Error loading videos. Please try again.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   const allVideos = data?.pages.flatMap((page) => page.videos) ?? [];
@@ -176,13 +163,18 @@ function VideoFeedContent() {
             <div className="relative group">
               <div className="relative w-full h-40 sm:h-48">
                 <Image
-                  src={video.snippet.thumbnails.high.url}
+                  src={video.snippet.thumbnails.high.url || FALLBACK_IMAGE}
                   alt={video.snippet.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
                   priority
                 />
+                {video.statistics && (
+                  <div className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                    {parseInt(video.statistics.viewCount).toLocaleString()} views
+                  </div>
+                )}
               </div>
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />
             </div>
@@ -194,6 +186,21 @@ function VideoFeedContent() {
               {video.aiInsights && (
                 <div className="text-xs text-indigo-600 italic">
                   {video.aiInsights}
+                </div>
+              )}
+              {video.player && (
+                <div className="mt-2">
+                  <a
+                    href={`https://www.youtube.com/watch?v=${video.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800"
+                  >
+                    Watch on YouTube
+                    <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
                 </div>
               )}
             </div>

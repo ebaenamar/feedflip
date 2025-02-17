@@ -11,7 +11,8 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 
 const queryClient = new QueryClient();
 
-const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?q=80&w=400&h=300&fit=crop';
+// Use a static image URL that works with Next.js Image optimization
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop';
 
 interface Video {
   id: string;
@@ -34,6 +35,27 @@ interface VideoResponse {
   aiInsights?: string;
 }
 
+function generateMockVideos(pageParam: string): VideoResponse {
+  const pageNumber = pageParam ? parseInt(pageParam) : 0;
+  return {
+    videos: Array.from({ length: 6 }, (_, i) => ({
+      id: `mock-${pageNumber}-${i}`,
+      snippet: {
+        title: `Goal Setting Tips - Part ${pageNumber * 6 + i + 1}`,
+        thumbnails: {
+          high: {
+            url: FALLBACK_IMAGE
+          }
+        },
+        channelTitle: 'Personal Growth Channel',
+        description: `Learn essential tips for setting and achieving your goals - Part ${pageNumber * 6 + i + 1}`
+      },
+      aiInsights: 'Practical advice for personal development and goal achievement'
+    })),
+    nextPageToken: (pageNumber < 5) ? (pageNumber + 1).toString() : undefined
+  };
+}
+
 function VideoFeedContent() {
   const [topic, setTopic] = useState('');
   const [searchInput, setSearchInput] = useState('');
@@ -41,56 +63,25 @@ function VideoFeedContent() {
   const { preferences } = usePreferences();
   
   const fetchVideos = async ({ pageParam = '' }) => {
-    const params = new URLSearchParams({
-      pageToken: pageParam,
-      topic: topic,
-      outOfEchoChamber: preferences.outOfEchoChamber.toString(),
-      contentTypes: preferences.contentTypes.join(','),
-      activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
-    });
-
-    const mockResponse: VideoResponse = {
-      videos: [
-        {
-          id: 'mock1',
-          snippet: {
-            title: 'Setting and Achieving Your Goals',
-            thumbnails: {
-              high: {
-                url: FALLBACK_IMAGE
-              }
-            },
-            channelTitle: 'Personal Growth Channel',
-            description: 'Learn how to set and achieve your personal goals effectively.'
-          },
-          aiInsights: 'This video provides practical advice on goal setting and achievement.'
-        },
-        {
-          id: 'mock2',
-          snippet: {
-            title: 'Mindfulness for Success',
-            thumbnails: {
-              high: {
-                url: FALLBACK_IMAGE
-              }
-            },
-            channelTitle: 'Wellness & Growth',
-            description: 'Discover how mindfulness can help you achieve your goals.'
-          },
-          aiInsights: 'Focuses on mental well-being and personal development.'
-        }
-      ],
-      nextPageToken: undefined
-    };
-
     try {
+      const params = new URLSearchParams({
+        pageToken: pageParam,
+        topic: topic,
+        outOfEchoChamber: preferences.outOfEchoChamber.toString(),
+        contentTypes: preferences.contentTypes.join(','),
+        activePrompts: JSON.stringify(preferences.customPrompts.filter(p => p.active)),
+      });
+
       const response = await fetch(`/api/videos?${params}`);
-      if (!response.ok) return mockResponse;
+      if (!response.ok) {
+        console.log('API error, using mock data');
+        return generateMockVideos(pageParam);
+      }
       const data = await response.json();
       return data as VideoResponse;
     } catch (error) {
       console.error('Error fetching videos:', error);
-      return mockResponse;
+      return generateMockVideos(pageParam);
     }
   };
 
@@ -123,7 +114,7 @@ function VideoFeedContent() {
   );
 
   if (isError) {
-    console.error('Error loading videos');
+    console.error('Error loading videos, showing mock data');
     return null;
   }
 
@@ -180,7 +171,7 @@ function VideoFeedContent() {
         {allVideos.map((video: Video) => (
           <div
             key={video.id}
-            className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-all duration-300 opacity-0 animate-fadeIn"
+            className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-all duration-300"
           >
             <div className="relative group">
               <div className="relative w-full h-40 sm:h-48">
@@ -190,11 +181,7 @@ function VideoFeedContent() {
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
-                  onError={(e) => {
-                    const imgElement = e.target as HTMLImageElement;
-                    imgElement.src = FALLBACK_IMAGE;
-                  }}
-                  unoptimized
+                  priority
                 />
               </div>
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />

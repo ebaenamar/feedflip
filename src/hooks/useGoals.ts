@@ -28,6 +28,12 @@ interface Goal {
   category: 'personal' | 'professional' | 'health' | 'relationships' | 'learning';
   emotionalStates: EmotionalState[];
   currentContent?: ContentSuggestion;
+  emotional?: {
+    energy: number;
+    positivity: number;
+    clarity: number;
+    confidence: number;
+  };
   milestones: {
     id: string;
     title: string;
